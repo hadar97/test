@@ -3,6 +3,7 @@ const bcrypt = require("bcrypt");
 const { UserModel, userValid, loginValid, createToken } = require("../models/usersModel")
 const jwt = require("jsonwebtoken");
 const { auth } = require("../middleware/auth");
+const { authAdmin } = require("../middleware/auth");
 const router = express.Router();
 
 router.get("/", async (req, res) => {
@@ -61,7 +62,7 @@ router.post("/login", async (req, res) => {
         if (!authPassword) {
             return res.status(401).json({ msg: "user and password not match code 2" })
         }
-        let newToken = createToken(user._id)
+        let newToken = createToken(user._id,user.role)
         res.json({ token: newToken })
     }
     catch (err) {
@@ -101,4 +102,16 @@ router.get("/myEmail",auth, async (req, res) => {
         return res.status(500).json({ msg: "err",err })
     }
 })
+
+router.get("/usersList", authAdmin , async(req,res) => {
+    try{
+      let data = await UserModel.find({},{password:0});
+      res.json(data)
+    }
+    catch(err){
+      console.log(err)
+      res.status(500).json({msg:"err",err})
+    }  
+  })
+  
 module.exports = router;
