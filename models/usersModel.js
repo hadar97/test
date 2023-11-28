@@ -1,6 +1,7 @@
 const mongoose = require("mongoose");
 const Joi = require("joi");
 const jwt=require("jsonwebtoken")
+const {config}=require("../config/secret")
 const userSchema = new mongoose.Schema({
   name:String,
   email:String,
@@ -31,7 +32,7 @@ exports.loginValid = (_bodyValid) =>{
   }
 
   exports.createToken=(_user_id)=>{
-    let token=jwt.sign({_id:_user_id},"Hadarsecret",{expiresIn:"60mins"})
+    let token=jwt.sign({_id:_user_id},config.token,{expiresIn:"60mins"})
   return token;
   }
   
